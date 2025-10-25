@@ -191,17 +191,25 @@ export function generateWindowsSecurity4696(): WindowsSecurity4696Event {
 }
 
 /**
- * Generate batch of Windows Security events
+ * Generate batch of Windows Security 4688 events
  */
 export function generateWindowsSecurity4688Batch(count: number): WindowsSecurity4688Event[] {
-  return Array.from({ length: count }, () => generateWindowsSecurity4688());
+  const events: WindowsSecurity4688Event[] = [];
+  for (let i = 0; i < count; i++) {
+    events.push(generateWindowsSecurity4688());
+  }
+  return events;
 }
 
 /**
  * Generate batch of Windows Security 4696 events
  */
 export function generateWindowsSecurity4696Batch(count: number): WindowsSecurity4696Event[] {
-  return Array.from({ length: count }, () => generateWindowsSecurity4696());
+  const events: WindowsSecurity4696Event[] = [];
+  for (let i = 0; i < count; i++) {
+    events.push(generateWindowsSecurity4696());
+  }
+  return events;
 }
 
 /**
