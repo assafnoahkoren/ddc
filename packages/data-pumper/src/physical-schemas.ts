@@ -96,7 +96,7 @@ export interface WindowsSecurity4696Event {
  */
 export const PHYSICAL_SOURCES = {
   SYSMON_PROCESS_CREATION: {
-    index: 'windows',
+    index: 'windows-events',
     sourcetype: 'XmlWinEventLog:Microsoft-Windows-Sysmon/Operational',
     source: 'XmlWinEventLog:Microsoft-Windows-Sysmon/Operational',
     logicalSourceHint: 'windows.process_creation',
@@ -104,7 +104,7 @@ export const PHYSICAL_SOURCES = {
   } as PhysicalSourceMetadata,
 
   WINDOWS_SECURITY_4688: {
-    index: 'windows',
+    index: 'windows-events',
     sourcetype: 'WinEventLog:Security',
     source: 'WinEventLog:Security',
     logicalSourceHint: 'windows.process_creation',
@@ -112,7 +112,7 @@ export const PHYSICAL_SOURCES = {
   } as PhysicalSourceMetadata,
 
   WINDOWS_SECURITY_4696: {
-    index: 'windows',
+    index: 'windows-events',
     sourcetype: 'WinEventLog:Security',
     source: 'WinEventLog:Security',
     logicalSourceHint: 'windows.process_creation',

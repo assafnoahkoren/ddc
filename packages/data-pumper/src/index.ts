@@ -134,7 +134,7 @@ async function main() {
     console.log('    * WinSec 4688: Uses NewProcessName, SubjectUserName, TimeCreated');
     console.log('    * WinSec 4696 (Legacy): Uses TargetProcessName, NewTokenAccountName, TimeCreated');
     console.log('\n🔍 Splunk query to view all events:');
-    console.log('   index=windows earliest=-1h | stats count by sourcetype, EventCode');
+    console.log('   index=windows-events earliest=-1h | stats count by sourcetype, EventCode');
   } catch (error) {
     console.error('\n❌ Data pump failed:', error);
     process.exit(1);
