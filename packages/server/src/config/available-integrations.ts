@@ -1,4 +1,5 @@
 import { IntegrationStrategy, type IntegrationDefinition } from './integration-types';
+import { discoverSplunkSchema } from '../integrations/splunk/schema-discovery';
 
 // Available integrations configuration
 export const availableIntegrations: Record<string, IntegrationDefinition> = {
@@ -42,7 +43,20 @@ export const availableIntegrations: Record<string, IntegrationDefinition> = {
         port: config['management-port'],
         // Don't log sensitive data like API key
       });
-      // TODO: Implement Splunk connection validation
+
+      // Discover Splunk schema
+      const result = await discoverSplunkSchema({
+        host: config.host as string,
+        'management-port': config['management-port'] as string,
+        'api-key': config['api-key'] as string,
+      });
+
+      console.log('Schema discovery result:', {
+        success: result.success,
+        indexCount: result.indexes.length,
+        sourcetypeCount: result.sourcetypes.length,
+        error: result.error,
+      });
     },
   },
   // Future integrations can be added here
