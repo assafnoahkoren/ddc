@@ -1,14 +1,15 @@
-// Catalog schema models
-// Place your catalog-related models here
+model Integration {
+  id            String   @id @default(uuid()) @db.Uuid
+  userId        String   @map("user_id") @db.Uuid
+  name          String   @db.VarChar(255)
+  type          String   @db.VarChar(100) // 'splunk', 'datadog', etc.
+  strategy      String   @db.VarChar(100) // 'api_key', 'oauth', etc.
+  configuration Json     // flexible storage for strategy-specific config
+  metadata      Json?    // optional metadata (last connection test, error messages, etc.)
+  isActive      Boolean  @default(true) @map("is_active")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
 
-// Example:
-// model DataSource {
-//   id          String   @id @default(cuid())
-//   name        String
-//   type        String
-//   description String?
-//   createdAt   DateTime @default(now())
-//   updatedAt   DateTime @updatedAt
-//
-//   @@schema("catalog")
-// }
+  @@map("integrations")
+  @@schema("catalog")
+}

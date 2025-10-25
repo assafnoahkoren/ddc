@@ -37,3 +37,6 @@ export * from '../_generated/client';
 
 // Re-export auth utilities
 export * from './auth';
+
+// Re-export integration service
+export * from './integrations';
