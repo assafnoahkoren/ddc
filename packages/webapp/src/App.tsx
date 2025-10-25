@@ -1,5 +1,6 @@
 import { trpc } from './utils/trpc';
 import './index.css';
+import { Button } from './components/ui/button';
 
 function App() {
   const { data, isLoading, error } = trpc.helloWorld.useQuery();
@@ -20,6 +21,9 @@ function App() {
           </div>
         )}
       </div>
+      <Button>
+        asd
+      </Button>
     </div>
   );
 }
