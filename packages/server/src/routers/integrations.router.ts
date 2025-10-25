@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { router, protectedProcedure } from '../trpc';
-import { integrationService } from '@ddc/db';
+import { integrationService, Prisma } from '@ddc/db';
 import { validateIntegrationConfig, availableIntegrations } from '../config/integrations';
 
 export const integrationsRouter = router({
@@ -77,7 +77,7 @@ export const integrationsRouter = router({
       }
 
       // Validate configuration if provided
-      let validatedConfig;
+      let validatedConfig: Prisma.InputJsonValue | undefined;
       if (input.configuration) {
         validatedConfig = validateIntegrationConfig(integration.type, input.configuration);
       }
