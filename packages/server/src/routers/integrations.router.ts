@@ -4,6 +4,12 @@ import { integrationService, Prisma } from '@ddc/db';
 import { validateIntegrationConfig } from '../config/integrations';
 
 export const integrationsRouter = router({
+  /**
+   * List all integrations for the authenticated user
+   */
+  listUserIntegrations: protectedProcedure.query(async ({ ctx }) => {
+    return integrationService.findByUserId(ctx.user.userId);
+  }),
 
   /**
    * Get a specific integration by ID

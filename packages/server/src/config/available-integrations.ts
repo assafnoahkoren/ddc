@@ -18,7 +18,7 @@ export const availableIntegrations: Record<string, IntegrationDefinition> = {
       fields: [
         {
           name: 'host',
-          type: 'url',
+          type: 'text',
           description: 'Splunk server hostname or IP address',
           required: true,
         },
