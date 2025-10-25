@@ -9,7 +9,25 @@ export const availableIntegrations: Record<string, IntegrationDefinition> = {
     icon: '/logos/splunk.png',
     supportedStrategies: [IntegrationStrategy.API_KEY],
     configSchema: {
+      name: {
+        name: 'name',
+        type: 'text',
+        description: 'A friendly name for this connection',
+        required: true,
+      },
       fields: [
+        {
+          name: 'host',
+          type: 'url',
+          description: 'Splunk server hostname or IP address',
+          required: true,
+        },
+        {
+          name: 'management-port',
+          type: 'text',
+          description: 'Splunk management port (default: 8089)',
+          required: true,
+        },
         {
           name: 'api-key',
           type: 'password',

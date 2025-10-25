@@ -18,6 +18,7 @@ export interface IntegrationConfigField {
 
 // Configuration schema with fields
 export interface IntegrationConfigSchema {
+  name: IntegrationConfigField;
   fields: IntegrationConfigField[];
 }
 

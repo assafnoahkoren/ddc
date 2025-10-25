@@ -1,11 +1,34 @@
+import { useState } from 'react';
 import { DataSourceCard } from '../../components/data-sources/DataSourceCard';
+import { IntegrationForm } from '../../components/integrations/IntegrationForm';
 import type { IntegrationDefinition } from '@ddc/server/src/config/integration-types';
 import { availableIntegrations } from '@ddc/server/src/config/integrations';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 export default function DataSourcesPage() {
+  const [selectedIntegration, setSelectedIntegration] = useState<IntegrationDefinition | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const handleConnect = (integration: IntegrationDefinition) => {
-    console.log('Connecting to:', integration);
-    // TODO: Implement connection logic
+    setSelectedIntegration(integration);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedIntegration(null);
+  };
+
+  const handleSubmit = async (values: Record<string, string>) => {
+    console.log('Submitting integration:', selectedIntegration?.id, values);
+    // TODO: Call tRPC mutation to create integration
+    handleCloseModal();
   };
 
   const integrations = Object.values(availableIntegrations);
@@ -30,6 +53,28 @@ export default function DataSourcesPage() {
           ))}
         </div>
       </div>
+
+      {/* Integration Form Modal */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              Connect to {selectedIntegration?.name}
+            </DialogTitle>
+            <DialogDescription>
+              {selectedIntegration?.description}
+            </DialogDescription>
+          </DialogHeader>
+          {selectedIntegration && (
+            <IntegrationForm
+              integration={selectedIntegration}
+              mode="create"
+              onSubmit={handleSubmit}
+              onCancel={handleCloseModal}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
