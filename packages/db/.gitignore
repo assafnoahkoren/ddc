@@ -1,0 +1,12 @@
+# Generated Prisma client
+src/_generated/
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Dependencies
+node_modules/
+
+# Environment
+.env.local

@@ -1,0 +1,143 @@
+// Prisma schema for Dynamic Data Catalog
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/_generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["catalog", "auth"]
+}
+
+// Import user schema
+// Note: Prisma doesn't support imports, so we include the models inline
+// user.prisma is kept as a reference but models must be in this file
+
+// User Authentication Schema
+model User {
+  id           String    @id @default(uuid()) @db.Uuid
+  email        String    @unique @db.VarChar(255)
+  passwordHash String    @map("password_hash") @db.VarChar(255)
+  name         String?   @db.VarChar(255)
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  lastLoginAt  DateTime? @map("last_login_at") @db.Timestamptz(6)
+  isActive     Boolean   @default(true) @map("is_active")
+
+  @@map("users")
+  @@schema("auth")
+}
+
+// Logical Sources - Abstract data sources
+model LogicalSource {
+  id          String         @id @default(uuid()) @db.Uuid
+  name        String         @unique @db.VarChar(255)
+  category    String         @db.VarChar(100)
+  description String?        @db.Text
+  createdAt   DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // Relations
+  fields         LogicalField[]
+  sourceMappings SourceMapping[]
+
+  @@map("logical_sources")
+  @@schema("catalog")
+}
+
+// Logical Fields - Field definitions in logical schemas
+model LogicalField {
+  id               String         @id @default(uuid()) @db.Uuid
+  logicalSourceId  String         @map("logical_source_id") @db.Uuid
+  fieldName        String         @map("field_name") @db.VarChar(255)
+  fieldType        String         @map("field_type") @db.VarChar(50)
+  description      String?        @db.Text
+  isRequired       Boolean        @default(false) @map("is_required")
+  createdAt        DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  // Relations
+  logicalSource LogicalSource   @relation(fields: [logicalSourceId], references: [id], onDelete: Cascade)
+  fieldMappings FieldMapping[]
+
+  @@unique([logicalSourceId, fieldName])
+  @@map("logical_fields")
+  @@schema("catalog")
+}
+
+// Physical Sources - Actual data sources from integrations
+model PhysicalSource {
+  id            String          @id @default(uuid()) @db.Uuid
+  integrationId String          @map("integration_id") @db.Uuid
+  sourceType    String          @map("source_type") @db.VarChar(100)
+  indexName     String          @map("index_name") @db.VarChar(255)
+  sourcetype    String          @db.VarChar(255)
+  source        String?         @db.VarChar(255)
+  eventCode     Int?            @map("event_code")
+  metadata      Json?           @db.JsonB
+  discoveredAt  DateTime        @default(now()) @map("discovered_at") @db.Timestamptz(6)
+  lastSeen      DateTime        @default(now()) @map("last_seen") @db.Timestamptz(6)
+
+  // Relations
+  fields         PhysicalField[]
+  sourceMappings SourceMapping[]
+
+  @@unique([integrationId, indexName, sourcetype, eventCode])
+  @@map("physical_sources")
+  @@schema("catalog")
+}
+
+// Physical Fields - Actual field names in physical sources
+model PhysicalField {
+  id               String         @id @default(uuid()) @db.Uuid
+  physicalSourceId String         @map("physical_source_id") @db.Uuid
+  fieldName        String         @map("field_name") @db.VarChar(255)
+  fieldType        String?        @map("field_type") @db.VarChar(50)
+  sampleValues     Json?          @map("sample_values") @db.JsonB
+  discoveredAt     DateTime       @default(now()) @map("discovered_at") @db.Timestamptz(6)
+
+  // Relations
+  physicalSource PhysicalSource  @relation(fields: [physicalSourceId], references: [id], onDelete: Cascade)
+  fieldMappings  FieldMapping[]
+
+  @@unique([physicalSourceId, fieldName])
+  @@map("physical_fields")
+  @@schema("catalog")
+}
+
+// Field Mappings - Maps physical fields to logical fields
+model FieldMapping {
+  id                  String        @id @default(uuid()) @db.Uuid
+  logicalFieldId      String        @map("logical_field_id") @db.Uuid
+  physicalFieldId     String        @map("physical_field_id") @db.Uuid
+  transformationRule  String?       @map("transformation_rule") @db.Text
+  confidenceScore     Decimal       @default(1.0) @map("confidence_score") @db.Decimal(3, 2)
+  createdAt           DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // Relations
+  logicalField  LogicalField  @relation(fields: [logicalFieldId], references: [id], onDelete: Cascade)
+  physicalField PhysicalField @relation(fields: [physicalFieldId], references: [id], onDelete: Cascade)
+
+  @@unique([logicalFieldId, physicalFieldId])
+  @@map("field_mappings")
+  @@schema("catalog")
+}
+
+// Source Mappings - Maps physical sources to logical sources
+model SourceMapping {
+  id                String         @id @default(uuid()) @db.Uuid
+  logicalSourceId   String         @map("logical_source_id") @db.Uuid
+  physicalSourceId  String         @map("physical_source_id") @db.Uuid
+  confidenceScore   Decimal        @default(1.0) @map("confidence_score") @db.Decimal(3, 2)
+  createdAt         DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  // Relations
+  logicalSource  LogicalSource  @relation(fields: [logicalSourceId], references: [id], onDelete: Cascade)
+  physicalSource PhysicalSource @relation(fields: [physicalSourceId], references: [id], onDelete: Cascade)
+
+  @@unique([logicalSourceId, physicalSourceId])
+  @@map("source_mappings")
+  @@schema("catalog")
+}
