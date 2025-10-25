@@ -1,5 +1,6 @@
 import { publicProcedure, router } from '../trpc';
 import { authRouter } from './auth';
+import { integrationsRouter } from './integrations.router';
 
 /**
  * Main app router
@@ -12,6 +13,7 @@ export const appRouter = router({
     };
   }),
   auth: authRouter,
+  integrations: integrationsRouter,
 });
 
 export type AppRouter = typeof appRouter;

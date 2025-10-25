@@ -1,11 +1,10 @@
 import type { DataSource } from '../../../types/data-source';
+import { availableIntegrations } from '@ddc/server/src/config/integrations';
 
-export const availableDataSources: DataSource[] = [
-  {
-    id: 'splunk',
-    name: 'Splunk',
-    icon: '/logos/splunk.png',
-    integrationId: 'splunk-enterprise',
-    description: 'Connect to Splunk for log analysis',
-  },
-];
+export const availableDataSources: DataSource[] = Object.values(availableIntegrations).map((integration) => ({
+  id: integration.id,
+  name: integration.name,
+  icon: integration.icon,
+  integrationId: integration.id,
+  description: integration.description,
+}));
