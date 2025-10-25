@@ -1,20 +1,28 @@
-import { Link } from 'react-router-dom';
-import { trpc } from '../utils/trpc';
+import { useNavigate } from 'react-router-dom';
+import { trpc } from '../../utils/trpc';
+import { useAuth } from '../../contexts/AuthContext';
+import { Button } from '@/components/ui/button';
 
 export default function HomePage() {
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const { data, isLoading, error } = trpc.helloWorld.useQuery();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
     <div style={{ padding: '2rem' }}>
-      <h1>Dynamic Data Catalog</h1>
-      <p>Welcome to the home page!</p>
-
-      <div style={{ marginTop: '2rem' }}>
-        <h2>Navigation</h2>
-        <nav style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-          <Link to="/login">Login</Link>
-          <Link to="/register">Register</Link>
-        </nav>
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h1 className="text-3xl font-bold">Dynamic Data Catalog</h1>
+          <p className="text-muted-foreground">Welcome back, {user?.name || user?.email}!</p>
+        </div>
+        <Button onClick={handleLogout} variant="outline">
+          Logout
+        </Button>
       </div>
 
       <div style={{ marginTop: '2rem' }}>
