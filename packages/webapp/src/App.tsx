@@ -1,4 +1,5 @@
 import { trpc } from './utils/trpc';
+import './index.css';
 
 function App() {
   const { data, isLoading, error } = trpc.helloWorld.useQuery();
