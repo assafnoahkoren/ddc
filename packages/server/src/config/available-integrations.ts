@@ -36,6 +36,14 @@ export const availableIntegrations: Record<string, IntegrationDefinition> = {
         },
       ],
     },
+    onCreate: async (config) => {
+      console.log('Splunk integration created with config:', {
+        host: config.host,
+        port: config['management-port'],
+        // Don't log sensitive data like API key
+      });
+      // TODO: Implement Splunk connection validation
+    },
   },
   // Future integrations can be added here
   // 'datadog': {

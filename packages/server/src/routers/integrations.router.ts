@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { router, protectedProcedure } from '../trpc';
 import { integrationService, Prisma } from '@ddc/db';
-import { validateIntegrationConfig } from '../config/integrations';
+import { validateIntegrationConfig, getIntegrationDefinition } from '../config/integrations';
 
 export const integrationsRouter = router({
   /**
@@ -43,13 +43,29 @@ export const integrationsRouter = router({
       // Validate configuration against integration schema
       const validatedConfig = validateIntegrationConfig(input.type, input.configuration);
 
-      return integrationService.create({
+      // Get integration definition to access onCreate hook
+      const integrationDef = getIntegrationDefinition(input.type);
+
+      // Create the integration in the database
+      const integration = await integrationService.create({
         userId: ctx.user.userId,
         name: input.name,
         type: input.type,
         strategy: input.strategy,
         configuration: validatedConfig,
       });
+
+      // Call onCreate hook if it exists
+      if (integrationDef?.onCreate) {
+        try {
+          await integrationDef.onCreate(input.configuration);
+        } catch (error) {
+          console.error(`onCreate hook failed for integration ${input.type}:`, error);
+          // Don't fail the creation if the hook fails
+        }
+      }
+
+      return integration;
     }),
 
   /**

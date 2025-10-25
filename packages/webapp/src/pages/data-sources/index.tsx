@@ -37,9 +37,25 @@ export default function DataSourcesPage() {
     },
   });
 
+  // Delete integration mutation
+  // @ts-expect-error ...
+  const deleteMutation = trpc.integrations.delete.useMutation({
+    onSuccess: () => {
+      toast.success('Integration disconnected successfully!');
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(`Failed to disconnect: ${error.message}`);
+    },
+  });
+
   const handleConnect = (integration: IntegrationDefinition) => {
     setSelectedIntegration(integration);
     setIsModalOpen(true);
+  };
+
+  const handleDisconnect = (integrationId: string) => {
+    deleteMutation.mutate({ id: integrationId });
   };
 
   const handleCloseModal = () => {
@@ -88,6 +104,7 @@ export default function DataSourcesPage() {
               return (
                 <DataSourceCard
                   key={integration.id}
+                  mode="disconnect"
                   dataSource={{
                     id: integrationDef.id,
                     name: integration.name,
@@ -96,10 +113,7 @@ export default function DataSourcesPage() {
                     supportedStrategies: integrationDef.supportedStrategies,
                     configSchema: integrationDef.configSchema,
                   }}
-                  onConnect={() => {
-                    // TODO: Handle edit
-                    console.log('Edit integration:', integration.id);
-                  }}
+                  onDisconnect={() => handleDisconnect(integration.id)}
                 />
               );
             })}

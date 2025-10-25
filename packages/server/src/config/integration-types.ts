@@ -30,4 +30,5 @@ export interface IntegrationDefinition {
   icon: string;
   supportedStrategies: IntegrationStrategyType[];
   configSchema: IntegrationConfigSchema;
+  onCreate?: (config: Record<string, unknown>) => void | Promise<void>;
 }

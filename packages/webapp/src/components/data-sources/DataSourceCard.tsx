@@ -1,16 +1,22 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import type { IntegrationDefinition } from '@ddc/server/src/config/integration-types';
-import { Plug } from 'lucide-react';
+import { Plug, Unplug } from 'lucide-react';
 
 interface DataSourceCardProps {
   dataSource: IntegrationDefinition;
+  mode?: 'connect' | 'disconnect';
   onConnect?: (dataSource: IntegrationDefinition) => void;
+  onDisconnect?: (dataSource: IntegrationDefinition) => void;
 }
 
-export function DataSourceCard({ dataSource, onConnect }: DataSourceCardProps) {
-  const handleConnect = () => {
-    onConnect?.(dataSource);
+export function DataSourceCard({ dataSource, mode = 'connect', onConnect, onDisconnect }: DataSourceCardProps) {
+  const handleAction = () => {
+    if (mode === 'connect') {
+      onConnect?.(dataSource);
+    } else {
+      onDisconnect?.(dataSource);
+    }
   };
 
   return (
@@ -35,9 +41,22 @@ export function DataSourceCard({ dataSource, onConnect }: DataSourceCardProps) {
         </div>
       </CardHeader>
       <CardContent>
-        <Button onClick={handleConnect} className="w-full">
-          <Plug className="mr-2 h-4 w-4" />
-          Connect
+        <Button
+          onClick={handleAction}
+          className="w-full"
+          variant={mode === 'disconnect' ? 'destructive' : 'default'}
+        >
+          {mode === 'connect' ? (
+            <>
+              <Plug className="mr-2 h-4 w-4" />
+              Connect
+            </>
+          ) : (
+            <>
+              <Unplug className="mr-2 h-4 w-4" />
+              Disconnect
+            </>
+          )}
         </Button>
       </CardContent>
     </Card>
