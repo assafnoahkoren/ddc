@@ -14,6 +14,13 @@ export function TrpcProvider({ children }: TrpcProviderProps) {
       links: [
         httpBatchLink({
           url: `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/trpc`,
+          headers: () => {
+            // Get token from localStorage
+            const token = localStorage.getItem('token');
+            return {
+              authorization: token ? `Bearer ${token}` : '',
+            };
+          },
         }),
       ],
     })

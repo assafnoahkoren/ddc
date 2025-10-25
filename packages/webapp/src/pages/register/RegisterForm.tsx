@@ -17,7 +17,7 @@ export function RegisterForm() {
   const registerMutation = trpc.auth.register.useMutation({
     onSuccess: (data) => {
       toast.success('Registration successful!', {
-        description: `Welcome, ${data.name || data.email}!`,
+        description: `Welcome, ${data.user.name || data.user.email}!`,
       });
       // Navigate to login page after successful registration
       setTimeout(() => navigate('/login'), 1500);

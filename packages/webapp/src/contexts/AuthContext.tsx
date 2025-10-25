@@ -9,9 +9,10 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
+  token: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  login: (user: User) => void;
+  login: (user: User, token: string) => void;
   logout: () => void;
 }
 
@@ -23,19 +24,24 @@ interface AuthProviderProps {
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Check for stored user on mount
+  // Check for stored token and user on mount
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        const storedToken = localStorage.getItem('token');
         const storedUser = localStorage.getItem('user');
-        if (storedUser) {
+
+        if (storedToken && storedUser) {
           const parsedUser = JSON.parse(storedUser);
+          setToken(storedToken);
           setUser(parsedUser);
         }
       } catch (error) {
-        console.error('Failed to parse stored user:', error);
+        console.error('Failed to parse stored auth data:', error);
+        localStorage.removeItem('token');
         localStorage.removeItem('user');
       } finally {
         setIsLoading(false);
@@ -45,20 +51,25 @@ export function AuthProvider({ children }: AuthProviderProps) {
     checkAuth();
   }, []);
 
-  const login = (userData: User) => {
+  const login = (userData: User, authToken: string) => {
     setUser(userData);
+    setToken(authToken);
     localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem('token', authToken);
   };
 
   const logout = () => {
     setUser(null);
+    setToken(null);
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
   };
 
   const value = {
     user,
+    token,
     isLoading,
-    isAuthenticated: !!user,
+    isAuthenticated: !!user && !!token,
     login,
     logout,
   };

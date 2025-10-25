@@ -2,6 +2,7 @@ import { z } from 'zod';
 import bcrypt from 'bcrypt';
 import { router, publicProcedure } from '../trpc';
 import { authService } from '@ddc/db';
+import { generateToken } from '../utils/jwt';
 
 /**
  * Auth router
@@ -36,12 +37,21 @@ export const authRouter = router({
         name: input.name,
       });
 
-      // Return user without password
-      return {
-        id: user.id,
+      // Generate JWT token
+      const token = generateToken({
+        userId: user.id,
         email: user.email,
-        name: user.name,
-        createdAt: user.createdAt,
+      });
+
+      // Return user without password and include token
+      return {
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          createdAt: user.createdAt,
+        },
+        token,
       };
     }),
 
@@ -76,12 +86,21 @@ export const authRouter = router({
       // Update last login
       await authService.updateLastLogin(user.id);
 
-      // Return user without password
-      return {
-        id: user.id,
+      // Generate JWT token
+      const token = generateToken({
+        userId: user.id,
         email: user.email,
-        name: user.name,
-        lastLoginAt: new Date(),
+      });
+
+      // Return user without password and include token
+      return {
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          lastLoginAt: new Date(),
+        },
+        token,
       };
     }),
 

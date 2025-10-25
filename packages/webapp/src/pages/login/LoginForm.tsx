@@ -18,10 +18,10 @@ export function LoginForm() {
   const loginMutation = trpc.auth.login.useMutation({
     onSuccess: (data) => {
       toast.success('Login successful!', {
-        description: `Welcome back, ${data.name || data.email}!`,
+        description: `Welcome back, ${data.user.name || data.user.email}!`,
       });
-      // Store user in auth context
-      login(data);
+      // Store user and token in auth context
+      login(data.user, data.token);
       // Navigate to home page after successful login
       setTimeout(() => navigate('/'), 1500);
     },
