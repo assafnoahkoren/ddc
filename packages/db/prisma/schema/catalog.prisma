@@ -1,0 +1,14 @@
+// Catalog schema models
+// Place your catalog-related models here
+
+// Example:
+// model DataSource {
+//   id          String   @id @default(cuid())
+//   name        String
+//   type        String
+//   description String?
+//   createdAt   DateTime @default(now())
+//   updatedAt   DateTime @updatedAt
+//
+//   @@schema("catalog")
+// }

@@ -1,4 +1,4 @@
-import { PrismaClient } from './_generated/client';
+import { PrismaClient } from '../_generated/client';
 
 /**
  * Global Prisma client instance
@@ -33,7 +33,7 @@ export async function connect() {
 }
 
 // Re-export Prisma types for convenience
-export * from './_generated/client';
+export * from '../_generated/client';
 
 // Re-export auth utilities
 export * from './auth';

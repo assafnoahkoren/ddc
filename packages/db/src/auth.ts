@@ -1,5 +1,5 @@
 import { prisma } from './index';
-import type { User } from './_generated/client';
+import type { User } from '../_generated/client';
 
 /**
  * User creation data

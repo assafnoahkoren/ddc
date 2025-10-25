@@ -1,8 +1,9 @@
-// Prisma schema for Dynamic Data Catalog
+// Base configuration for Prisma
+// This file contains the generator and datasource configuration
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/_generated/client"
+  output   = "../../_generated/client"
 }
 
 datasource db {

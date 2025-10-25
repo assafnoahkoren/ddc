@@ -1,5 +1,5 @@
 # Generated Prisma client
-src/_generated/
+_generated/
 
 # Build output
 dist/
