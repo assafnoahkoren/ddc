@@ -14,11 +14,19 @@ export interface SplunkConfig {
 }
 
 /**
+ * Server configuration
+ */
+export interface ServerConfig {
+  port: number;
+}
+
+/**
  * Application configuration
  */
 export interface AppConfig {
   env: Environment;
   logLevel: string;
+  server: ServerConfig;
   splunk: SplunkConfig;
 }
 

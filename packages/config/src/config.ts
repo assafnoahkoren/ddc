@@ -1,5 +1,5 @@
 import { dotenvLoad } from 'dotenv-mono';
-import type { AppConfig, ConfigOptions, Environment, SplunkConfig } from './types';
+import type { AppConfig, ConfigOptions, Environment, ServerConfig, SplunkConfig } from './types';
 
 /**
  * Load and parse environment variables
@@ -45,6 +45,7 @@ export class Config {
     return {
       env: this.getEnv(),
       logLevel: process.env.LOG_LEVEL || 'info',
+      server: this.getServerConfig(),
       splunk: this.getSplunkConfig(),
     };
   }
@@ -58,6 +59,15 @@ export class Config {
       return 'development';
     }
     return env as Environment;
+  }
+
+  /**
+   * Get server configuration
+   */
+  private getServerConfig(): ServerConfig {
+    return {
+      port: parseInt(process.env.PORT || '3000', 10),
+    };
   }
 
   /**
@@ -96,6 +106,13 @@ export class Config {
    */
   public get all(): Readonly<AppConfig> {
     return Object.freeze({ ...this.config });
+  }
+
+  /**
+   * Get server configuration
+   */
+  public get server(): Readonly<ServerConfig> {
+    return Object.freeze({ ...this.config.server });
   }
 
   /**

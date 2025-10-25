@@ -30,16 +30,14 @@ app.use(
 );
 
 // Start server
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
+app.listen(config.server.port, () => {
   console.log('='.repeat(60));
   console.log(`🚀 tRPC Server running`);
   console.log('='.repeat(60));
   console.log(`  Environment: ${config.environment}`);
-  console.log(`  Port: ${PORT}`);
-  console.log(`  tRPC endpoint: http://localhost:${PORT}/trpc`);
-  console.log(`  Health check: http://localhost:${PORT}/health`);
+  console.log(`  Port: ${config.server.port}`);
+  console.log(`  tRPC endpoint: http://localhost:${config.server.port}/trpc`);
+  console.log(`  Health check: http://localhost:${config.server.port}/health`);
   console.log('='.repeat(60));
 });
 
