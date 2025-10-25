@@ -69,6 +69,29 @@ export interface WindowsSecurity4688Event {
 }
 
 /**
+ * Windows Security Event 4696 - A primary token was assigned to process
+ * Actual fields as they appear in Splunk
+ * NOTE: Deprecated in Windows 7+ but useful for legacy log simulation
+ */
+export interface WindowsSecurity4696Event {
+  EventCode: 4696;
+  TimeCreated: string;
+  Computer: string;
+  SubjectUserSid: string;
+  SubjectUserName: string;
+  SubjectDomainName: string;
+  SubjectLogonId: string;
+  ProcessId: string;
+  ProcessName: string;
+  TargetProcessId: string;
+  TargetProcessName: string;
+  NewTokenSecurityId: string;
+  NewTokenAccountName: string;
+  NewTokenAccountDomain: string;
+  NewTokenLogonId: string;
+}
+
+/**
  * Physical source types
  */
 export const PHYSICAL_SOURCES = {
@@ -86,5 +109,13 @@ export const PHYSICAL_SOURCES = {
     source: 'WinEventLog:Security',
     logicalSourceHint: 'windows.process_creation',
     eventCode: 4688,
+  } as PhysicalSourceMetadata,
+
+  WINDOWS_SECURITY_4696: {
+    index: 'windows',
+    sourcetype: 'WinEventLog:Security',
+    source: 'WinEventLog:Security',
+    logicalSourceHint: 'windows.process_creation',
+    eventCode: 4696,
   } as PhysicalSourceMetadata,
 } as const;

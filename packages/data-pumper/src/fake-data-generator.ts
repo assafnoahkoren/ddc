@@ -1,5 +1,5 @@
 import { randomInt, randomUUID } from 'crypto';
-import { PHYSICAL_SOURCES, SysmonProcessCreationEvent, WindowsSecurity4688Event } from './physical-schemas';
+import { PHYSICAL_SOURCES, SysmonProcessCreationEvent, WindowsSecurity4688Event, WindowsSecurity4696Event } from './physical-schemas';
 
 /**
  * Realistic data pools for generating fake Windows events
@@ -161,6 +161,36 @@ export function generateSysmonBatch(count: number): SysmonProcessCreationEvent[]
 }
 
 /**
+ * Generate a fake Windows Security 4696 event (Token Assignment)
+ * NOTE: Deprecated in Windows 7+ but useful for legacy log simulation
+ */
+export function generateWindowsSecurity4696(): WindowsSecurity4696Event {
+  const process = randomChoice(DATA_POOLS.windowsProcesses);
+  const targetProcess = randomChoice(DATA_POOLS.windowsProcesses);
+  const subjectUser = randomChoice(DATA_POOLS.users);
+  const newTokenUser = randomChoice(DATA_POOLS.users);
+  const host = randomChoice(DATA_POOLS.hosts);
+
+  return {
+    EventCode: 4696,
+    TimeCreated: generateWindowsSecurityTimestamp(),
+    Computer: host,
+    SubjectUserSid: subjectUser.sid,
+    SubjectUserName: subjectUser.username,
+    SubjectDomainName: subjectUser.domain,
+    SubjectLogonId: `0x${randomInt(10000, 99999).toString(16)}`,
+    ProcessId: `0x${randomInt(100, 999).toString(16)}`,
+    ProcessName: process.path,
+    TargetProcessId: `0x${randomInt(1000, 65535).toString(16)}`,
+    TargetProcessName: targetProcess.path,
+    NewTokenSecurityId: newTokenUser.sid,
+    NewTokenAccountName: newTokenUser.username,
+    NewTokenAccountDomain: newTokenUser.domain,
+    NewTokenLogonId: `0x${randomInt(10000, 99999).toString(16)}`,
+  };
+}
+
+/**
  * Generate batch of Windows Security events
  */
 export function generateWindowsSecurity4688Batch(count: number): WindowsSecurity4688Event[] {
@@ -168,13 +198,22 @@ export function generateWindowsSecurity4688Batch(count: number): WindowsSecurity
 }
 
 /**
+ * Generate batch of Windows Security 4696 events
+ */
+export function generateWindowsSecurity4696Batch(count: number): WindowsSecurity4696Event[] {
+  return Array.from({ length: count }, () => generateWindowsSecurity4696());
+}
+
+/**
  * Get physical source metadata for event type
  */
-export function getPhysicalSource(eventType: 'sysmon' | 'winsec4688') {
+export function getPhysicalSource(eventType: 'sysmon' | 'winsec4688' | 'winsec4696') {
   switch (eventType) {
     case 'sysmon':
       return PHYSICAL_SOURCES.SYSMON_PROCESS_CREATION;
     case 'winsec4688':
       return PHYSICAL_SOURCES.WINDOWS_SECURITY_4688;
+    case 'winsec4696':
+      return PHYSICAL_SOURCES.WINDOWS_SECURITY_4696;
   }
 }
