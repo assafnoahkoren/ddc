@@ -1,77 +1,38 @@
-import https from 'https';
 import { getConfig } from '@ddc/config';
+import { SplunkSDK, SplunkEvent } from './splunk-sdk';
 
-// Get typed configuration
-const config = getConfig();
-const splunkConfig = config.splunk;
-
-interface SplunkEvent {
-  time?: number;
-  host?: string;
-  source?: string;
-  sourcetype?: string;
-  index?: string;
-  event: any;
-}
-
-async function sendToSplunk(event: SplunkEvent): Promise<void> {
-  const data = JSON.stringify(event);
-
-  const options = {
-    hostname: splunkConfig.host,
-    port: splunkConfig.port,
-    path: splunkConfig.hecEndpoint,
-    method: 'POST',
-    headers: {
-      'Authorization': `Splunk ${splunkConfig.token}`,
-      'Content-Type': 'application/json',
-      'Content-Length': Buffer.byteLength(data)
-    },
-    rejectUnauthorized: false // Set to true in production with valid SSL cert
+// Define typed event data
+interface UserActionEvent {
+  message: string;
+  level: string;
+  user_id: number;
+  action: 'login' | 'logout';
+  timestamp: string;
+  metadata?: {
+    app_version: string;
+    environment: string;
   };
-
-  return new Promise((resolve, reject) => {
-    const req = https.request(options, (res) => {
-      let responseBody = '';
-
-      res.on('data', (chunk) => {
-        responseBody += chunk;
-      });
-
-      res.on('end', () => {
-        if (res.statusCode === 200) {
-          console.log('Successfully sent to Splunk:', responseBody);
-          resolve();
-        } else {
-          console.error('Failed to send to Splunk:', res.statusCode, responseBody);
-          reject(new Error(`Splunk returned status ${res.statusCode}: ${responseBody}`));
-        }
-      });
-    });
-
-    req.on('error', (error) => {
-      console.error('Error sending to Splunk:', error);
-      reject(error);
-    });
-
-    req.write(data);
-    req.end();
-  });
 }
 
 async function main() {
-  // Configuration is automatically validated by @ddc/config
+  // Get configuration
+  const config = getConfig();
+
+  // Initialize Splunk SDK
+  const splunk = new SplunkSDK(config.splunk);
+
   console.log(`Environment: ${config.environment}`);
-  console.log(`Splunk Host: ${splunkConfig.host}`);
+  console.log(`Splunk Host: ${config.splunk.host}`);
   console.log(`Log Level: ${config.logLevel}`);
 
-  const exampleEvent: SplunkEvent = {
+  // Create typed events with full IntelliSense support
+  const event1: SplunkEvent<UserActionEvent> = {
     time: Math.floor(Date.now() / 1000),
     host: 'data-pumper',
     source: 'example-source',
     sourcetype: '_json',
     event: {
-      message: 'Example log entry',
+      message: 'Example log entry - user login',
       level: config.logLevel,
       user_id: 12345,
       action: 'login',
@@ -83,11 +44,34 @@ async function main() {
     }
   };
 
+  const event2: SplunkEvent<UserActionEvent> = {
+    time: Math.floor(Date.now() / 1000),
+    host: 'data-pumper',
+    source: 'example-source',
+    sourcetype: '_json',
+    event: {
+      message: 'Example log entry - user logout',
+      level: 'info',
+      user_id: 67890,
+      action: 'logout',
+      timestamp: new Date().toISOString()
+    }
+  };
+
   try {
-    await sendToSplunk(exampleEvent);
-    console.log('Data pump completed successfully');
+    // Send single event
+    console.log('\nSending single event...');
+    const response1 = await splunk.sendEvents(event1);
+    console.log(`✓ Event sent successfully (${response1.code}):`, response1.text);
+
+    // Send multiple events in one request (more efficient)
+    console.log('\nSending batch of events...');
+    const batchResponse = await splunk.sendEvents([event1, event2]);
+    console.log(`✓ Batch sent successfully (${batchResponse.code}):`, batchResponse.text);
+
+    console.log('\n✅ Data pump completed successfully');
   } catch (error) {
-    console.error('Data pump failed:', error);
+    console.error('\n❌ Data pump failed:', error);
     process.exit(1);
   }
 }
