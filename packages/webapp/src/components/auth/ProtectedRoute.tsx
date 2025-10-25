@@ -1,5 +1,6 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { Shell } from '../layout/Shell';
 import { Loader2 } from 'lucide-react';
 
 interface ProtectedRouteProps {
@@ -26,6 +27,6 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
     return <Navigate to="/login" replace />;
   }
 
-  // Render protected content if authenticated
-  return <>{children}</>;
+  // Render protected content with Shell layout
+  return <Shell>{children}</Shell>;
 }

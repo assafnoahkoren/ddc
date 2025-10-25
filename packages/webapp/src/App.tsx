@@ -5,6 +5,8 @@ import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import HomePage from './pages/home';
 import LoginPage from './pages/login';
 import RegisterPage from './pages/register';
+import DataSourcesPage from './pages/data-sources';
+import QueryDataPage from './pages/query-data';
 import './index.css';
 
 function App() {
@@ -18,6 +20,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <HomePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/data-sources"
+            element={
+              <ProtectedRoute>
+                <DataSourcesPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/query-data"
+            element={
+              <ProtectedRoute>
+                <QueryDataPage />
               </ProtectedRoute>
             }
           />
