@@ -1,11 +1,11 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import type { DataSource } from '../../types/data-source';
+import type { IntegrationDefinition } from '@ddc/server/src/config/integration-types';
 import { Plug } from 'lucide-react';
 
 interface DataSourceCardProps {
-  dataSource: DataSource;
-  onConnect?: (dataSource: DataSource) => void;
+  dataSource: IntegrationDefinition;
+  onConnect?: (dataSource: IntegrationDefinition) => void;
 }
 
 export function DataSourceCard({ dataSource, onConnect }: DataSourceCardProps) {

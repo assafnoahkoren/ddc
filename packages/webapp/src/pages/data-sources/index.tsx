@@ -1,10 +1,10 @@
 import { DataSourceCard } from '../../components/data-sources/DataSourceCard';
-import type { DataSource } from '../../types/data-source';
+import type { IntegrationDefinition } from '@ddc/server/src/config/integration-types';
 import { availableIntegrations } from '@ddc/server/src/config/integrations';
 
 export default function DataSourcesPage() {
-  const handleConnect = (dataSource: DataSource) => {
-    console.log('Connecting to:', dataSource);
+  const handleConnect = (integration: IntegrationDefinition) => {
+    console.log('Connecting to:', integration);
     // TODO: Implement connection logic
   };
 
@@ -21,22 +21,13 @@ export default function DataSourcesPage() {
       <div>
         <h2 className="text-xl font-semibold mb-4">Available Integrations</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {integrations.map((integration) => {
-            const dataSource: DataSource = {
-              id: integration.id,
-              name: integration.name,
-              icon: integration.icon,
-              integrationId: integration.id,
-              description: integration.description,
-            };
-            return (
-              <DataSourceCard
-                key={integration.id}
-                dataSource={dataSource}
-                onConnect={handleConnect}
-              />
-            );
-          })}
+          {integrations.map((integration) => (
+            <DataSourceCard
+              key={integration.id}
+              dataSource={integration}
+              onConnect={handleConnect}
+            />
+          ))}
         </div>
       </div>
     </div>
