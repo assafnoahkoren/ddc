@@ -1,23 +1,14 @@
 import { DataSourceCard } from '../../components/data-sources/DataSourceCard';
 import type { DataSource } from '../../types/data-source';
-import { trpc } from '../../utils/trpc';
-import { Loader2 } from 'lucide-react';
+import { availableIntegrations } from '@ddc/server/src/config/integrations';
 
 export default function DataSourcesPage() {
-  const { data: integrations, isLoading } = trpc.integrations.list.useQuery();
-
   const handleConnect = (dataSource: DataSource) => {
     console.log('Connecting to:', dataSource);
     // TODO: Implement connection logic
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
-  }
+  const integrations = Object.values(availableIntegrations);
 
   return (
     <div className="p-8">
@@ -30,7 +21,7 @@ export default function DataSourcesPage() {
       <div>
         <h2 className="text-xl font-semibold mb-4">Available Integrations</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {integrations?.map((integration) => {
+          {integrations.map((integration) => {
             const dataSource: DataSource = {
               id: integration.id,
               name: integration.name,

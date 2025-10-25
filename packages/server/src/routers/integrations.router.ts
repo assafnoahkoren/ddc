@@ -1,15 +1,9 @@
 import { z } from 'zod';
 import { router, protectedProcedure } from '../trpc';
 import { integrationService, Prisma } from '@ddc/db';
-import { validateIntegrationConfig, availableIntegrations } from '../config/integrations';
+import { validateIntegrationConfig } from '../config/integrations';
 
 export const integrationsRouter = router({
-  /**
-   * Get all available integrations
-   */
-  list: protectedProcedure.query(async () => {
-    return Object.values(availableIntegrations);
-  }),
 
   /**
    * Get a specific integration by ID
