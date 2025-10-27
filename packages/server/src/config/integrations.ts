@@ -1,5 +1,6 @@
 import type { Prisma } from '@ddc/db';
 import type { IntegrationDefinition } from './integration-types';
+import { DatasourceConfig } from '../integrations/infra';
 
 // Re-export types from separate file
 export * from './integration-types';
@@ -15,7 +16,7 @@ export function getIntegrationDefinition(integrationId: string): IntegrationDefi
 }
 
 // Helper to validate configuration for a specific integration
-export function validateIntegrationConfig(integrationId: string, config: unknown): Prisma.InputJsonValue {
+export function validateIntegrationConfig(integrationId: string, config: unknown): any {
   const definition = getIntegrationDefinition(integrationId);
   if (!definition) {
     throw new Error(`Unknown integration type: ${integrationId}`);

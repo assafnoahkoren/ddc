@@ -2,6 +2,8 @@ import { z } from 'zod';
 import { router, protectedProcedure } from '../trpc';
 import { integrationService, Prisma } from '@ddc/db';
 import { validateIntegrationConfig, getIntegrationDefinition } from '../config/integrations';
+import { discoverDatasourceSchema } from '../integrations/common';
+import type { IntegrationType } from '../integrations/infra';
 
 export const integrationsRouter = router({
   /**
@@ -55,9 +57,20 @@ export const integrationsRouter = router({
         configuration: validatedConfig,
       });
 
-      // await Discory flow
-      // await logicalSchema to Collection (or maybe dont do it and let the user do it manually)
+      // Discover datasource schema (collections only, not fields yet)
+      console.log('Starting datasource discovery for integration:', integration.id);
+      const discoveryResult = await discoverDatasourceSchema(
+        integration.id,
+        input.type as IntegrationType,
+        validatedConfig,
+        {
+          discoverFields: false, // Don't discover fields during creation (too slow)
+        }
+      );
 
+      console.log('Discovery result:', discoveryResult);
+
+      // TODO: Allow user to manually map logical schemas to collections
 
       return integration;
     }),
@@ -137,5 +150,45 @@ export const integrationsRouter = router({
       }
 
       return integrationService.toggleActive(input.id);
+    }),
+
+  /**
+   * Discover fields for a specific collection
+   */
+  discoverCollectionFields: protectedProcedure
+    .input(z.object({ collectionId: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const { prisma } = await import('@ddc/db');
+      const { discoverAndSaveFields } = await import('../integrations/common');
+      const { SDK_REGISTRY } = await import('../integrations/infra');
+
+      // Fetch the collection with its integration
+      const collection = await prisma.collection.findUnique({
+        where: { id: input.collectionId },
+        include: { integration: true },
+      });
+
+      if (!collection) {
+        throw new Error('Collection not found');
+      }
+
+      // Ensure user owns this integration
+      if (collection.integration.userId !== ctx.user.userId) {
+        throw new Error('Unauthorized');
+      }
+
+      // Get the SDK for this integration type
+      const sdk = SDK_REGISTRY[collection.integration.type as IntegrationType];
+      if (!sdk) {
+        throw new Error(`No SDK found for integration type: ${collection.integration.type}`);
+      }
+
+      // Discover and save fields
+      return await discoverAndSaveFields(
+        collection.id,
+        collection.name,
+        sdk,
+        collection.integration.configuration as any
+      );
     }),
 });

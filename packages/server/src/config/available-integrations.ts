@@ -1,9 +1,9 @@
 import { IntegrationStrategy, type IntegrationDefinition } from './integration-types';
-import type { IntegrationId } from '../integrations/infra';
+import type { IntegrationType } from '../integrations/infra';
 
 // Type that ensures the record key matches the integration definition's id
 type IntegrationRegistry = {
-  [K in IntegrationId]: IntegrationDefinition & { id: K };
+  [K in IntegrationType]: IntegrationDefinition & { id: K };
 };
 
 // Available integrations configuration
