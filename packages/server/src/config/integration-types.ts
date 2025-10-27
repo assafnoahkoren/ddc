@@ -14,6 +14,7 @@ export interface IntegrationConfigField {
   type: 'text' | 'password' | 'url' | 'email';
   description: string;
   required?: boolean;
+  defaultValue?: string;
 }
 
 // Configuration schema with fields

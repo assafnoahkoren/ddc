@@ -22,18 +22,21 @@ export const availableIntegrations: Record<string, IntegrationDefinition> = {
           type: 'text',
           description: 'Splunk server hostname or IP address',
           required: true,
+          defaultValue: 'https://prd-p-7hu66.splunkcloud.com'
         },
         {
           name: 'management-port',
           type: 'text',
-          description: 'Splunk management port (default: 8089)',
+          description: 'Splunk management port',
           required: true,
+          defaultValue: '8089',
         },
         {
           name: 'api-key',
           type: 'password',
           description: 'Your Splunk API key',
           required: true,
+          defaultValue: 'eyJraWQiOiJzcGx1bmsuc2VjcmV0IiwiYWxnIjoiSFM1MTIiLCJ2ZXIiOiJ2MiIsInR0eXAiOiJzdGF0aWMifQ.eyJpc3MiOiJzY19hZG1pbiBmcm9tIHNpLWktMGYwNzZhMTMzMmQ5YTczNjgiLCJzdWIiOiJzY19hZG1pbiIsImF1ZCI6ImFueSIsImlkcCI6IlNwbHVuayIsImp0aSI6ImM5ZDA3YTYzZGE4MjJmYTU2YzU3NTM3NDVjNDg1ODQ5MjZlYmE1OGQwNzNlZDA2YjhlNzZjOGVjZWUwMjg3MWQiLCJpYXQiOjE3NjE0MjI3MjIsImV4cCI6MTc2NDAxNDcyMiwibmJyIjoxNzYxNDIyNzIyfQ.hx3rqJck1PdH7UrYn0lUNUf4w9KjTtI7JeXTktsKhaZNM0L8H4zCpOnXyDFK90We96xTk5Zf2d9zGieiZ2gdQQ'
         },
       ],
     },

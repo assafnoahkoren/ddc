@@ -19,7 +19,27 @@ export function IntegrationForm({
   onSubmit,
   onCancel,
 }: IntegrationFormProps) {
-  const [values, setValues] = useState<Record<string, string>>(initialValues);
+  // Initialize values with defaults from field definitions
+  const getInitialValues = () => {
+    const defaults: Record<string, string> = {};
+
+    // Add default for name field
+    if (integration.configSchema.name.defaultValue) {
+      defaults[integration.configSchema.name.name] = integration.configSchema.name.defaultValue;
+    }
+
+    // Add defaults for other fields
+    integration.configSchema.fields.forEach((field) => {
+      if (field.defaultValue) {
+        defaults[field.name] = field.defaultValue;
+      }
+    });
+
+    // Merge with initialValues (initialValues takes precedence)
+    return { ...defaults, ...initialValues };
+  };
+
+  const [values, setValues] = useState<Record<string, string>>(getInitialValues());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -123,6 +143,7 @@ export function IntegrationForm({
               type={getInputType(field.type)}
               value={values[field.name] || ''}
               onChange={(e) => handleChange(field.name, e.target.value)}
+              placeholder={field.defaultValue || field.description}
               className={errors[field.name] ? 'border-red-500' : ''}
             />
             {field.description && (
