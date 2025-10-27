@@ -32,8 +32,9 @@ model Collection {
   updatedAt     DateTime @updatedAt @map("updated_at")
 
   // Relations
-  integration     Integration     @relation(fields: [integrationId], references: [id], onDelete: Cascade)
-  physicalFields  PhysicalField[]
+  integration    Integration                  @relation(fields: [integrationId], references: [id], onDelete: Cascade)
+  physicalFields PhysicalField[]
+  schemaMappings LogicalSchemaToCollection[]
 
   @@map("collections")
   @@schema("catalog")
@@ -84,26 +85,47 @@ model LogicalSchema {
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   // Relations
-  logicalFields LogicalField[]
+  logicalFields       LogicalField[]
+  collectionMappings  LogicalSchemaToCollection[]
 
   @@map("logical_schemas")
   @@schema("catalog")
 }
 
-model LogicalToPhysicalFieldMapping {
+model LogicalSchemaToCollection {
   id              String   @id @default(uuid()) @db.Uuid
-  logicalFieldId  String   @map("logical_field_id") @db.Uuid
-  physicalFieldId String   @map("physical_field_id") @db.Uuid
-  transformation  String?  @db.Text // optional transformation logic (e.g., "parse(field, 'json').user")
-  confidence      Float?   @db.DoublePrecision // confidence score for the mapping (0.0 to 1.0)
+  logicalSchemaId String   @map("logical_schema_id") @db.Uuid
+  collectionId    String   @map("collection_id") @db.Uuid
+  metadata        Json?    // additional mapping metadata
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
   // Relations
-  logicalField  LogicalField  @relation(fields: [logicalFieldId], references: [id], onDelete: Cascade)
-  physicalField PhysicalField @relation(fields: [physicalFieldId], references: [id], onDelete: Cascade)
+  logicalSchema  LogicalSchema                   @relation(fields: [logicalSchemaId], references: [id], onDelete: Cascade)
+  collection     Collection                      @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  fieldMappings  LogicalToPhysicalFieldMapping[]
 
-  @@unique([logicalFieldId, physicalFieldId])
+  @@unique([logicalSchemaId, collectionId])
+  @@map("logical_schema_to_collections")
+  @@schema("catalog")
+}
+
+model LogicalToPhysicalFieldMapping {
+  id                         String                     @id @default(uuid()) @db.Uuid
+  schemaToCollectionId       String                     @map("schema_to_collection_id") @db.Uuid
+  logicalFieldId             String                     @map("logical_field_id") @db.Uuid
+  physicalFieldId            String                     @map("physical_field_id") @db.Uuid
+  transformation             String?                    @db.Text // optional transformation logic (e.g., "parse(field, 'json').user")
+  confidence                 Float?                     @db.DoublePrecision // confidence score for the mapping (0.0 to 1.0)
+  createdAt                  DateTime                   @default(now()) @map("created_at")
+  updatedAt                  DateTime                   @updatedAt @map("updated_at")
+
+  // Relations
+  schemaToCollection LogicalSchemaToCollection @relation(fields: [schemaToCollectionId], references: [id], onDelete: Cascade)
+  logicalField       LogicalField              @relation(fields: [logicalFieldId], references: [id], onDelete: Cascade)
+  physicalField      PhysicalField             @relation(fields: [physicalFieldId], references: [id], onDelete: Cascade)
+
+  @@unique([schemaToCollectionId, logicalFieldId, physicalFieldId])
   @@map("logical_to_physical_field_mappings")
   @@schema("catalog")
 }
