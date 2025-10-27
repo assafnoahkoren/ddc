@@ -55,15 +55,9 @@ export const integrationsRouter = router({
         configuration: validatedConfig,
       });
 
-      // Call onCreate hook if it exists
-      if (integrationDef?.onCreate) {
-        try {
-          await integrationDef.onCreate(input.configuration);
-        } catch (error) {
-          console.error(`onCreate hook failed for integration ${input.type}:`, error);
-          // Don't fail the creation if the hook fails
-        }
-      }
+      // await Discory flow
+      // await logicalSchema to Collection (or maybe dont do it and let the user do it manually)
+
 
       return integration;
     }),
