@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import type { IntegrationId } from '../integrations/infra';
 
 // Strategy types
 export const IntegrationStrategy = {
@@ -25,7 +26,7 @@ export interface IntegrationConfigSchema {
 
 // Integration type definitions
 export interface IntegrationDefinition {
-  id: string;
+  id: IntegrationId;
   name: string;
   description: string;
   icon: string;

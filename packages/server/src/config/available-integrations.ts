@@ -1,8 +1,9 @@
 import { IntegrationStrategy, type IntegrationDefinition } from './integration-types';
 import { discoverSplunkSchema } from '../integrations/splunk/schema-discovery';
+import type { IntegrationId } from '../integrations/infra';
 
 // Available integrations configuration
-export const availableIntegrations: Record<string, IntegrationDefinition> = {
+export const availableIntegrations: Record<IntegrationId, IntegrationDefinition> = {
   'splunk': {
     id: 'splunk',
     name: 'Splunk',
