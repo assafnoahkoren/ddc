@@ -2,8 +2,13 @@ import { IntegrationStrategy, type IntegrationDefinition } from './integration-t
 import { discoverSplunkSchema } from '../integrations/splunk/schema-discovery';
 import type { IntegrationId } from '../integrations/infra';
 
+// Type that ensures the record key matches the integration definition's id
+type IntegrationRegistry = {
+  [K in IntegrationId]: IntegrationDefinition & { id: K };
+};
+
 // Available integrations configuration
-export const availableIntegrations: Record<IntegrationId, IntegrationDefinition> = {
+export const availableIntegrations: IntegrationRegistry = {
   'splunk': {
     id: 'splunk',
     name: 'Splunk',
