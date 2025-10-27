@@ -1,3 +1,9 @@
+enum FieldDataType {
+  STRING @map("string")
+
+  @@schema("catalog")
+}
+
 model Integration {
   id            String   @id @default(uuid()) @db.Uuid
   userId        String   @map("user_id") @db.Uuid
@@ -10,6 +16,94 @@ model Integration {
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
+  // Relations
+  collections   Collection[]
+
   @@map("integrations")
+  @@schema("catalog")
+}
+
+model Collection {
+  id            String   @id @default(uuid()) @db.Uuid
+  integrationId String   @map("integration_id") @db.Uuid
+  name          String   @db.VarChar(255) // e.g., "index:main, sourcetype:sysmon"
+  metadata      Json?    // additional collection-specific metadata
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  integration     Integration     @relation(fields: [integrationId], references: [id], onDelete: Cascade)
+  physicalFields  PhysicalField[]
+
+  @@map("collections")
+  @@schema("catalog")
+}
+
+model PhysicalField {
+  id           String        @id @default(uuid()) @db.Uuid
+  collectionId String        @map("collection_id") @db.Uuid
+  name         String        @db.VarChar(255) // e.g., "EventCode", "TargetUserName"
+  dataType     FieldDataType @default(STRING) @map("data_type")
+  metadata     Json?         // additional field metadata
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+
+  // Relations
+  collection Collection                        @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  mappings   LogicalToPhysicalFieldMapping[]
+
+  @@map("physical_fields")
+  @@schema("catalog")
+}
+
+model LogicalField {
+  id          String        @id @default(uuid()) @db.Uuid
+  schemaId    String        @map("schema_id") @db.Uuid
+  name        String        @db.VarChar(255) // e.g., "process_name", "user", "timestamp"
+  dataType    FieldDataType @default(STRING) @map("data_type")
+  description String?       @db.Text
+  isRequired  Boolean       @default(false) @map("is_required")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  // Relations
+  schema   LogicalSchema                     @relation(fields: [schemaId], references: [id], onDelete: Cascade)
+  mappings LogicalToPhysicalFieldMapping[]
+
+  @@map("logical_fields")
+  @@schema("catalog")
+}
+
+model LogicalSchema {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique @db.VarChar(255) // e.g., "ProcessCreation", "NetworkConnection"
+  description String?  @db.Text
+  version     String   @default("1.0") @db.VarChar(50)
+  metadata    Json?    // additional schema metadata
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  logicalFields LogicalField[]
+
+  @@map("logical_schemas")
+  @@schema("catalog")
+}
+
+model LogicalToPhysicalFieldMapping {
+  id              String   @id @default(uuid()) @db.Uuid
+  logicalFieldId  String   @map("logical_field_id") @db.Uuid
+  physicalFieldId String   @map("physical_field_id") @db.Uuid
+  transformation  String?  @db.Text // optional transformation logic (e.g., "parse(field, 'json').user")
+  confidence      Float?   @db.DoublePrecision // confidence score for the mapping (0.0 to 1.0)
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  logicalField  LogicalField  @relation(fields: [logicalFieldId], references: [id], onDelete: Cascade)
+  physicalField PhysicalField @relation(fields: [physicalFieldId], references: [id], onDelete: Cascade)
+
+  @@unique([logicalFieldId, physicalFieldId])
+  @@map("logical_to_physical_field_mappings")
   @@schema("catalog")
 }
