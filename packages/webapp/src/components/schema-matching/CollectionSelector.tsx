@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { trpc } from '../../utils/trpc';
-import { Loader2, Database, Search } from 'lucide-react';
+import { Loader2, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { IntegrationIcon, getIntegrationDisplayName } from '../integrations/IntegrationIcon';
 
 interface CollectionSelectorProps {
   logicalSchemaId: string;
@@ -79,12 +80,13 @@ export function CollectionSelector({
                 onClick={() => setSelectedId(collection.id)}
               >
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <Database className="h-5 w-5 text-primary" />
+                  <div className="h-10 px-2 rounded-lg bg-primary/10 flex items-center justify-center ">
+                    <IntegrationIcon className='w-12' type={collection.integration?.type || 'unknown'} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold truncate">{collection.name}</h3>
                     <p className="text-sm text-muted-foreground">
+                      {getIntegrationDisplayName(collection.integration?.type || 'unknown')} ·{' '}
                       {collection.integration?.name} · {collection.physicalFields?.length || 0}{' '}
                       fields
                     </p>
