@@ -1,21 +1,37 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import type { IntegrationDefinition } from '@ddc/server/src/config/integration-types';
-import { Plug, Unplug } from 'lucide-react';
+import { Plug, Unplug, Settings } from 'lucide-react';
 
 interface DataSourceCardProps {
   dataSource: IntegrationDefinition;
   mode?: 'connect' | 'disconnect';
+  integrationId?: string; // ID of the actual integration instance (for disconnect mode)
   onConnect?: (dataSource: IntegrationDefinition) => void;
   onDisconnect?: (dataSource: IntegrationDefinition) => void;
+  onConfigure?: (integrationId: string) => void;
 }
 
-export function DataSourceCard({ dataSource, mode = 'connect', onConnect, onDisconnect }: DataSourceCardProps) {
+export function DataSourceCard({
+  dataSource,
+  mode = 'connect',
+  integrationId,
+  onConnect,
+  onDisconnect,
+  onConfigure
+}: DataSourceCardProps) {
   const handleAction = () => {
     if (mode === 'connect') {
       onConnect?.(dataSource);
     } else {
       onDisconnect?.(dataSource);
+    }
+  };
+
+  const handleConfigure = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (integrationId) {
+      onConfigure?.(integrationId);
     }
   };
 
@@ -38,6 +54,17 @@ export function DataSourceCard({ dataSource, mode = 'connect', onConnect, onDisc
               )}
             </div>
           </div>
+          {mode === 'disconnect' && onConfigure && integrationId && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleConfigure}
+              className="h-8 w-8"
+              title="Configure integration"
+            >
+              <Settings className="h-4 w-4" />
+            </Button>
+          )}
         </div>
       </CardHeader>
       <CardContent>

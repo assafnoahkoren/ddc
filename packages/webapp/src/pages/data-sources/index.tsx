@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { DataSourceCard } from '../../components/data-sources/DataSourceCard';
 import { IntegrationForm } from '../../components/integrations/IntegrationForm';
+import { IntegrationDetailsDialog } from '../../components/integrations/IntegrationDetailsDialog';
 import type { IntegrationDefinition } from '@ddc/server/src/config/integration-types';
 import { availableIntegrations } from '@ddc/server/src/config/integrations';
 import { trpc } from '../../utils/trpc';
@@ -20,6 +21,8 @@ type IntegrationConfig = Record<string, string | number | boolean>;
 export default function DataSourcesPage() {
   const [selectedIntegration, setSelectedIntegration] = useState<IntegrationDefinition | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [configureIntegrationId, setConfigureIntegrationId] = useState<string | null>(null);
+  const [isConfigDialogOpen, setIsConfigDialogOpen] = useState(false);
 
   // Fetch user integrations
   const { data: userIntegrations, isLoading, refetch } = trpc.integrations.listUserIntegrations.useQuery();
@@ -56,6 +59,11 @@ export default function DataSourcesPage() {
 
   const handleDisconnect = (integrationId: string) => {
     deleteMutation.mutate({ id: integrationId });
+  };
+
+  const handleConfigure = (integrationId: string) => {
+    setConfigureIntegrationId(integrationId);
+    setIsConfigDialogOpen(true);
   };
 
   const handleCloseModal = () => {
@@ -105,6 +113,7 @@ export default function DataSourcesPage() {
                 <DataSourceCard
                   key={integration.id}
                   mode="disconnect"
+                  integrationId={integration.id}
                   dataSource={{
                     id: integrationDef.id,
                     name: integration.name,
@@ -114,6 +123,7 @@ export default function DataSourcesPage() {
                     configSchema: integrationDef.configSchema,
                   }}
                   onDisconnect={() => handleDisconnect(integration.id)}
+                  onConfigure={handleConfigure}
                 />
               );
             })}
@@ -156,6 +166,15 @@ export default function DataSourcesPage() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Integration Details Dialog */}
+      {configureIntegrationId && (
+        <IntegrationDetailsDialog
+          integrationId={configureIntegrationId}
+          open={isConfigDialogOpen}
+          onOpenChange={setIsConfigDialogOpen}
+        />
+      )}
     </div>
   );
 }

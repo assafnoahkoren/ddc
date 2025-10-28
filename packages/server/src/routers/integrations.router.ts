@@ -153,6 +153,38 @@ export const integrationsRouter = router({
     }),
 
   /**
+   * List collections for a specific integration
+   */
+  listCollections: protectedProcedure
+    .input(z.object({ integrationId: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const { prisma } = await import('@ddc/db');
+
+      // Fetch the integration to check ownership
+      const integration = await integrationService.findById(input.integrationId);
+
+      if (!integration) {
+        throw new Error('Integration not found');
+      }
+
+      // Ensure user owns this integration
+      if (integration.userId !== ctx.user.userId) {
+        throw new Error('Unauthorized');
+      }
+
+      // Fetch collections with their fields
+      return await prisma.collection.findMany({
+        where: { integrationId: input.integrationId },
+        include: {
+          physicalFields: {
+            orderBy: { name: 'asc' },
+          },
+        },
+        orderBy: { name: 'asc' },
+      });
+    }),
+
+  /**
    * Discover fields for a specific collection
    */
   discoverCollectionFields: protectedProcedure
