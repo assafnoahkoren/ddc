@@ -8,7 +8,20 @@ import {
 } from './fake-data-generator';
 import type { SysmonProcessCreationEvent, WindowsSecurity4688Event, WindowsSecurity4696Event } from './physical-schemas';
 
-async function main() {
+// Export mock Splunk REST API functions
+export * from './fake-splunk-rest-api';
+
+// Export data generator functions for use in other packages
+export * from './fake-data-generator';
+export * from './physical-schemas';
+export * from './splunk-sdk';
+
+/**
+ * Main function to generate and send fake events to Splunk
+ * This is exported but NOT called at module level - it should be called explicitly
+ * when you want to pump data to Splunk (e.g., via a CLI command or API endpoint)
+ */
+export async function pumpDataToSplunk() {
   // Get configuration
   const config = getConfig();
 
@@ -137,8 +150,9 @@ async function main() {
     console.log('   index=windows-events earliest=-1h | stats count by sourcetype, EventCode');
   } catch (error) {
     console.error('\n❌ Data pump failed:', error);
-    process.exit(1);
+    throw error;
   }
 }
 
-main();
+// NOTE: main() is NOT called at module level
+// Call pumpDataToSplunk() explicitly when you want to send data to Splunk

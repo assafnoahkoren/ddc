@@ -1,5 +1,5 @@
 {
-  "name": "data-pumper",
+  "name": "@ddc/data-pumper",
   "version": "1.0.0",
   "description": "Data pumper for sending events to Splunk",
   "main": "dist/index.js",
@@ -13,7 +13,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@ddc/config": "*"
+    "@ddc/config": "*",
+    "@ddc/db": "*"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

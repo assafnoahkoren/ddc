@@ -46,6 +46,30 @@ export const availableIntegrations: IntegrationRegistry = {
       ],
     },
   },
+  'splunk-mock': {
+    id: 'splunk-mock',
+    name: 'Splunk (Mock Data)',
+    description: 'Connect to Splunk using fake data for development and testing',
+    icon: '/logos/splunk.png',
+    supportedStrategies: [IntegrationStrategy.API_KEY],
+    configSchema: {
+      name: {
+        name: 'name',
+        type: 'text',
+        description: 'A friendly name for this connection',
+        required: true,
+      },
+      fields: [
+        {
+          name: 'mock-mode',
+          type: 'text',
+          description: 'Mock mode enabled - no real connection required',
+          required: false,
+          defaultValue: 'enabled',
+        },
+      ],
+    },
+  },
   // Future integrations can be added here
   // 'datadog': {
   //   id: 'datadog',
