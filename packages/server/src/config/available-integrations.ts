@@ -59,15 +59,7 @@ export const availableIntegrations: IntegrationRegistry = {
         description: 'A friendly name for this connection',
         required: true,
       },
-      fields: [
-        {
-          name: 'mock-mode',
-          type: 'text',
-          description: 'Mock mode enabled - no real connection required',
-          required: false,
-          defaultValue: 'enabled',
-        },
-      ],
+      fields: [],
     },
   },
   // Future integrations can be added here
