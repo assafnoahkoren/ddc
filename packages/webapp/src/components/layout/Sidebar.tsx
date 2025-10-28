@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Home, Database, Search, LogOut } from 'lucide-react';
+import { Home, Database, Search, LogOut, GitMerge } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function Sidebar() {
@@ -16,6 +16,7 @@ export function Sidebar() {
   const navItems = [
     { to: '/', label: 'Home', icon: Home },
     { to: '/data-sources', label: 'Data Sources', icon: Database },
+    { to: '/logical-schemas', label: 'Logical Schemas', icon: GitMerge },
     { to: '/query-data', label: 'Query Data', icon: Search },
   ];
 

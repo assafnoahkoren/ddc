@@ -40,3 +40,6 @@ export * from './auth';
 
 // Re-export integration service
 export * from './integrations';
+
+// Re-export logical schema service
+export * from './logical-schemas';

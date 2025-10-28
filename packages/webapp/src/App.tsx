@@ -7,6 +7,7 @@ import LoginPage from './pages/login';
 import RegisterPage from './pages/register';
 import DataSourcesPage from './pages/data-sources';
 import QueryDataPage from './pages/query-data';
+import SchemaMatchingPage from './pages/schema-matching';
 import './index.css';
 
 function App() {
@@ -36,6 +37,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <QueryDataPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/logical-schemas"
+            element={
+              <ProtectedRoute>
+                <SchemaMatchingPage />
               </ProtectedRoute>
             }
           />
