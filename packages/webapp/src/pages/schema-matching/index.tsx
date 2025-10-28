@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { trpc } from '../../utils/trpc';
-import { Loader2, Plus, Database, Edit, Trash2 } from 'lucide-react';
+import { Loader2, Plus, Database, Edit, Trash2, GitCompareArrows } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -14,6 +15,7 @@ import { toast } from 'sonner';
 
 export default function SchemaMatchingPage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   // Fetch logical schemas
   const { data: schemas, isLoading, refetch } = trpc.logicalSchemas.list.useQuery();
@@ -132,6 +134,19 @@ export default function SchemaMatchingPage() {
                 ) : (
                   <p className="text-sm text-muted-foreground">No fields defined</p>
                 )}
+              </div>
+
+              {/* Match Button */}
+              <div className="mt-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                  onClick={() => navigate(`/logical-schemas/${schema.id}/match`)}
+                >
+                  <GitCompareArrows className="h-4 w-4 mr-2" />
+                  Match to Collections
+                </Button>
               </div>
             </div>
           ))}

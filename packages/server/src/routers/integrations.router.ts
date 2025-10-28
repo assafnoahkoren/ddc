@@ -153,6 +153,35 @@ export const integrationsRouter = router({
     }),
 
   /**
+   * List all collections for the authenticated user (across all integrations)
+   */
+  listAllCollections: protectedProcedure.query(async ({ ctx }) => {
+    const { prisma } = await import('@ddc/db');
+
+    // Fetch all collections for user's integrations
+    return await prisma.collection.findMany({
+      where: {
+        integration: {
+          userId: ctx.user.userId,
+        },
+      },
+      include: {
+        physicalFields: {
+          orderBy: { name: 'asc' },
+        },
+        integration: {
+          select: {
+            id: true,
+            name: true,
+            type: true,
+          },
+        },
+      },
+      orderBy: { name: 'asc' },
+    });
+  }),
+
+  /**
    * List collections for a specific integration
    */
   listCollections: protectedProcedure

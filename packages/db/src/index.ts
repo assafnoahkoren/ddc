@@ -43,3 +43,6 @@ export * from './integrations';
 
 // Re-export logical schema service
 export * from './logical-schemas';
+
+// Re-export schema mapping service
+export * from './schema-mappings';

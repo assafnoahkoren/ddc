@@ -8,6 +8,7 @@ import RegisterPage from './pages/register';
 import DataSourcesPage from './pages/data-sources';
 import QueryDataPage from './pages/query-data';
 import SchemaMatchingPage from './pages/schema-matching';
+import SchemaMatchingDetailPage from './pages/schema-matching/match';
 import './index.css';
 
 function App() {
@@ -45,6 +46,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <SchemaMatchingPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/logical-schemas/:id/match"
+            element={
+              <ProtectedRoute>
+                <SchemaMatchingDetailPage />
               </ProtectedRoute>
             }
           />
