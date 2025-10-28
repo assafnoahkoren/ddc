@@ -50,26 +50,6 @@ const MOCK_INDEXES = [
     totalEventCount: '750000',
     currentDBSizeMB: '320.8',
   },
-  {
-    name: 'network',
-    totalEventCount: '3200000',
-    currentDBSizeMB: '1200.5',
-  },
-  {
-    name: 'web-logs',
-    totalEventCount: '5000000',
-    currentDBSizeMB: '2100.7',
-  },
-  {
-    name: '_internal',
-    totalEventCount: '500000',
-    currentDBSizeMB: '180.2',
-  },
-  {
-    name: '_audit',
-    totalEventCount: '100000',
-    currentDBSizeMB: '45.1',
-  },
 ];
 
 /**
@@ -78,20 +58,9 @@ const MOCK_INDEXES = [
 const MOCK_SOURCETYPES = [
   { name: 'WinEventLog:Sysmon/Operational' },
   { name: 'WinEventLog:Security' },
-  { name: 'WinEventLog:System' },
-  { name: 'WinEventLog:Application' },
   { name: 'XmlWinEventLog:Microsoft-Windows-Sysmon/Operational' },
-  { name: 'XmlWinEventLog:Security' },
   { name: 'syslog' },
-  { name: 'cisco:asa' },
-  { name: 'cisco:firepower' },
-  { name: 'aws:cloudtrail' },
-  { name: 'aws:s3:accesslogs' },
-  { name: 'linux_secure' },
-  { name: 'access_combined' },
-  { name: 'iis' },
   { name: 'json' },
-  { name: 'csv' },
 ];
 
 /**

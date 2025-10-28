@@ -57,14 +57,14 @@ export const integrationsRouter = router({
         configuration: validatedConfig,
       });
 
-      // Discover datasource schema (collections only, not fields yet)
+      // Discover datasource schema (collections and fields)
       console.log('Starting datasource discovery for integration:', integration.id);
       const discoveryResult = await discoverDatasourceSchema(
         integration.id,
         input.type as IntegrationType,
         validatedConfig,
         {
-          discoverFields: false, // Don't discover fields during creation (too slow)
+          discoverFields: true, // TODO: Move to background worker for better UX
         }
       );
 
