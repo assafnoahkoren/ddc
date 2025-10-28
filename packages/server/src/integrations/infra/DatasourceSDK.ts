@@ -6,6 +6,7 @@
  */
 
 import { FieldDataType } from '@ddc/db';
+import type { QueryAST } from '../../types/query-ast';
 
 /**
  * Represents a collection discovered from a datasource
@@ -81,6 +82,17 @@ export interface DatasourceSDK {
     config: DatasourceConfig,
     collectionName: string
   ): Promise<FieldDiscoveryResult>;
+
+  /**
+   * Convert a QueryAST to a datasource-specific query string
+   * @param queryAST - The abstract query to convert
+   * @param fieldMappings - Map of logical field names to physical field names
+   * @returns Datasource-specific query string (e.g., SPL for Splunk)
+   */
+  convertQueryAST(
+    queryAST: QueryAST,
+    fieldMappings: Record<string, string>
+  ): string;
 
   /**
    * Query data from a collection

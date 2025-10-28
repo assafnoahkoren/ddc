@@ -11,6 +11,7 @@ import type {
   SchemaDiscoveryResult,
   FieldDiscoveryResult,
 } from '../infra';
+import type { QueryAST } from '../../types/query-ast';
 import {
   mockValidateConnection,
   mockDiscoverCollections,
@@ -44,6 +45,15 @@ export class SplunkMockSDK implements DatasourceSDK {
     collectionName: string
   ): Promise<FieldDiscoveryResult> {
     return mockDiscoverFields(collectionName);
+  }
+
+  /**
+   * Convert a QueryAST to Splunk SPL (uses the same implementation as real Splunk SDK)
+   */
+  convertQueryAST(queryAST: QueryAST, fieldMappings: Record<string, string>): string {
+    // Import and use the real SplunkSDK implementation
+    const { splunkSDK } = require('../splunk/SplunkSDK');
+    return splunkSDK.convertQueryAST(queryAST, fieldMappings);
   }
 
   /**

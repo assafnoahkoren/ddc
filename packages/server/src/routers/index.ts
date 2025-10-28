@@ -3,6 +3,7 @@ import { authRouter } from './auth';
 import { integrationsRouter } from './integrations.router';
 import { logicalSchemasRouter } from './logical-schemas.router';
 import { schemaMappingsRouter } from './schema-mappings.router';
+import { queryRouter } from './query.router';
 
 /**
  * Main app router
@@ -18,6 +19,7 @@ export const appRouter = router({
   integrations: integrationsRouter,
   logicalSchemas: logicalSchemasRouter,
   schemaMappings: schemaMappingsRouter,
+  query: queryRouter,
 });
 
 export type AppRouter = typeof appRouter;

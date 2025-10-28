@@ -15,6 +15,8 @@ import type {
   DiscoveredCollection,
   DiscoveredField,
 } from '../infra';
+import type { QueryAST, FilterCondition, ComparisonFilter, LogicalFilter } from '../../types/query-ast';
+import { QueryOperator, LogicalOperator } from '../../types/query-ast';
 
 interface SplunkConfig extends DatasourceConfig {
   host: string;
@@ -280,6 +282,71 @@ export class SplunkSDK implements DatasourceSDK {
         error: error instanceof Error ? error.message : 'Unknown error',
       };
     }
+  }
+
+  /**
+   * Convert a QueryAST to Splunk SPL (Search Processing Language)
+   */
+  convertQueryAST(queryAST: QueryAST, fieldMappings: Record<string, string>): string {
+    // Helper to map logical field to physical field
+    const mapField = (logicalField: string): string => {
+      return fieldMappings[logicalField] || logicalField;
+    };
+
+    // Helper to convert filter condition to SPL
+    const convertFilter = (filter: FilterCondition): string => {
+      if (filter.type === 'comparison') {
+        const compFilter = filter as ComparisonFilter;
+        const physicalField = mapField(compFilter.field);
+        const value = compFilter.value;
+
+        switch (compFilter.operator) {
+          case QueryOperator.EQUALS:
+            return `${physicalField}="${value}"`;
+          case QueryOperator.CONTAINS:
+            return `${physicalField}=*${value}*`;
+          case QueryOperator.GREATER_THAN:
+            return `${physicalField}>${value}`;
+          case QueryOperator.LESS_THAN:
+            return `${physicalField}<${value}`;
+          default:
+            return `${physicalField}="${value}"`;
+        }
+      } else {
+        const logicalFilter = filter as LogicalFilter;
+        const conditions = logicalFilter.conditions.map(convertFilter);
+
+        switch (logicalFilter.operator) {
+          case LogicalOperator.AND:
+            return conditions.join(' AND ');
+          case LogicalOperator.OR:
+            return `(${conditions.join(' OR ')})`;
+          default:
+            return conditions.join(' AND ');
+        }
+      }
+    };
+
+    // Build SPL query
+    let spl = 'search';
+
+    // Add filter conditions
+    if (queryAST.where) {
+      spl += ` ${convertFilter(queryAST.where)}`;
+    }
+
+    // Add field selection (table command)
+    if (queryAST.select && queryAST.select.length > 0) {
+      const physicalFields = queryAST.select.map(mapField);
+      spl += ` | table ${physicalFields.join(', ')}`;
+    }
+
+    // Add limit (head command)
+    if (queryAST.limit) {
+      spl += ` | head ${queryAST.limit}`;
+    }
+
+    return spl;
   }
 
   /**

@@ -157,6 +157,29 @@ export class SchemaMappingService {
       },
     });
   }
+
+  /**
+   * Get field mappings for a logical schema and collection
+   * Used for query conversion to map logical field names to physical field names
+   */
+  async getFieldMappings(logicalSchemaId: string, collectionId: string) {
+    const schemaToCollection = await prisma.logicalSchemaToCollection.findFirst({
+      where: {
+        logicalSchemaId,
+        collectionId,
+      },
+      include: {
+        fieldMappings: {
+          include: {
+            logicalField: true,
+            physicalField: true,
+          },
+        },
+      },
+    });
+
+    return schemaToCollection?.fieldMappings || [];
+  }
 }
 
 // Export singleton instance

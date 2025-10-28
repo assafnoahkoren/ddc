@@ -21,6 +21,7 @@ export default function QueryDataPage() {
     { id: 2, field: '', operator: 'eq', value: '' },
   ]);
   const [limit, setLimit] = useState<number>(100);
+  const [generatedQueries, setGeneratedQueries] = useState<any[]>([]);
 
   const { data: schemas, isLoading: schemasLoading } = trpc.logicalSchemas.list.useQuery();
   const { data: selectedSchema } = trpc.logicalSchemas.getById.useQuery(
@@ -39,7 +40,9 @@ export default function QueryDataPage() {
     setFilters([...filters, { id: newId, field: '', operator: 'eq', value: '' }]);
   };
 
-  const executeQuery = () => {
+  const convertQueryMutation = trpc.query.convertToQuery.useMutation();
+
+  const executeQuery = async () => {
     const activeFilters = filters.filter(f => f.field && f.value);
     const query: Partial<QueryAST> = {
       logicalSchemaId: selectedSchemaId,
@@ -69,6 +72,16 @@ export default function QueryDataPage() {
     }
 
     console.log('Executing query:', query);
+
+    try {
+      const result = await convertQueryMutation.mutateAsync({
+        queryAST: query as QueryAST,
+      });
+
+      setGeneratedQueries(result.queries);
+    } catch (error) {
+      console.error('Failed to convert query:', error);
+    }
   };
 
   if (schemasLoading) {
@@ -153,11 +166,37 @@ export default function QueryDataPage() {
 
             {/* Execute Button */}
             <div className="flex justify-end border-t pt-4">
-              <Button size="lg" onClick={executeQuery} disabled={!selectedSchemaId}>
+              <Button
+                size="lg"
+                onClick={executeQuery}
+                disabled={!selectedSchemaId || convertQueryMutation.isLoading}
+              >
                 <Play className="h-4 w-4 mr-2" />
-                Execute Query
+                {convertQueryMutation.isLoading ? 'Generating...' : 'Execute Query'}
               </Button>
             </div>
+
+            {/* Generated Queries Display */}
+            {generatedQueries.length > 0 && (
+              <div className="border-t pt-4 mt-4">
+                <h3 className="text-sm font-medium mb-3">Generated Queries ({generatedQueries.length} collections)</h3>
+                <div className="space-y-4">
+                  {generatedQueries.map((queryResult: any, index: number) => (
+                    <div key={index} className="border rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="text-sm font-medium">{queryResult.collectionName}</h4>
+                        <span className="text-xs text-muted-foreground px-2 py-1 bg-muted rounded">
+                          {queryResult.integrationType}
+                        </span>
+                      </div>
+                      <div className="bg-muted p-3 rounded font-mono text-xs overflow-x-auto">
+                        {queryResult.query}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </>
         )}
       </div>
