@@ -7,7 +7,7 @@
   ],
   "scripts": {
     "setup": "bash scripts/setup.sh",
-    "dev": "concurrently -n db,server,webapp -c cyan,magenta,green \"npm run dev --workspace=packages/db\" \"npm run dev --workspace=packages/server\" \"npm run dev --workspace=packages/webapp\"",
+    "dev": "concurrently -n db,server,webapp,pumper -c cyan,magenta,green,yellow \"npm run dev --workspace=packages/db\" \"npm run dev --workspace=packages/server\" \"npm run dev --workspace=packages/webapp\" \"npm run dev --workspace=packages/data-pumper\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
