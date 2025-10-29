@@ -12,6 +12,64 @@ echo -e "${BLUE}DDC Setup Script${NC}"
 echo -e "${BLUE}========================================${NC}"
 echo ""
 
+# Step 0: Create .env files
+echo -e "${YELLOW}[0/4] Creating .env files...${NC}"
+
+# Root .env
+if [ -f .env ]; then
+    echo -e "   Root .env file already exists. Backing up to .env.backup"
+    cp .env .env.backup
+fi
+
+cat > .env << 'EOF'
+# Environment
+NODE_ENV=development
+
+# Database Configuration
+DB_HOST=localhost
+DB_PORT=15432
+DB_USER=ddc_user
+DB_PASSWORD=ddc_password
+DB_NAME=ddc_catalog
+
+# Server Configuration
+PORT=3003
+
+# JWT Configuration (change in production)
+JWT_SECRET=your-secret-key-change-in-production
+
+# Logging
+LOG_LEVEL=info
+EOF
+
+echo -e "${GREEN}✓ Root .env file created${NC}"
+
+# Database package .env
+if [ -f packages/db/.env ]; then
+    echo -e "   Database .env file already exists. Backing up to packages/db/.env.backup"
+    cp packages/db/.env packages/db/.env.backup
+fi
+
+cat > packages/db/.env << 'EOF'
+DATABASE_URL="postgresql://ddc_user:ddc_password@localhost:15432/ddc_catalog?schema=catalog"
+EOF
+
+echo -e "${GREEN}✓ Database .env file created${NC}"
+
+# Webapp package .env
+if [ -f packages/webapp/.env ]; then
+    echo -e "   Webapp .env file already exists. Backing up to packages/webapp/.env.backup"
+    cp packages/webapp/.env packages/webapp/.env.backup
+fi
+
+cat > packages/webapp/.env << 'EOF'
+# API Server URL
+VITE_API_URL=http://localhost:3003
+EOF
+
+echo -e "${GREEN}✓ Webapp .env file created${NC}"
+echo ""
+
 # Step 1: Install dependencies
 echo -e "${YELLOW}[1/4] Installing dependencies...${NC}"
 npm install
