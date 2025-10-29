@@ -38,6 +38,12 @@ PORT=3003
 # JWT Configuration (change in production)
 JWT_SECRET=your-secret-key-change-in-production
 
+# Splunk Configuration (optional - fill in if using Splunk)
+SPLUNK_TOKEN=your-splunk-hec-token-here
+SPLUNK_HOST=https://your-splunk-instance.splunkcloud.com
+SPLUNK_PORT=8088
+SPLUNK_HEC_ENDPOINT=/services/collector/event
+
 # Logging
 LOG_LEVEL=info
 EOF
