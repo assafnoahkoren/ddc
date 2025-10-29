@@ -6,6 +6,7 @@
     "packages/*"
   ],
   "scripts": {
+    "setup": "bash scripts/setup.sh",
     "dev": "concurrently -n db,server,webapp -c cyan,magenta,green \"npm run dev --workspace=packages/db\" \"npm run dev --workspace=packages/server\" \"npm run dev --workspace=packages/webapp\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
