@@ -88,13 +88,13 @@ export class Config {
   private validate(): void {
     const errors: string[] = [];
 
-    if (!this.config.splunk.token) {
-      errors.push('SPLUNK_TOKEN is required');
-    }
+    // if (!this.config.splunk.token) {
+    //   errors.push('SPLUNK_TOKEN is required');
+    // }
 
-    if (!this.config.splunk.host) {
-      errors.push('SPLUNK_HOST is required');
-    }
+    // if (!this.config.splunk.host) {
+    //   errors.push('SPLUNK_HOST is required');
+    // }
 
     if (errors.length > 0) {
       throw new Error(`Configuration validation failed:\n${errors.join('\n')}`);
