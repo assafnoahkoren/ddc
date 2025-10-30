@@ -125,9 +125,20 @@ fi
 
 echo ""
 
-# Step 4: Run Prisma migrations
-echo -e "${YELLOW}[4/4] Running Prisma migrations...${NC}"
+# Step 4: Run Prisma generate and migrations
+echo -e "${YELLOW}[4/5] Generating Prisma Client...${NC}"
 cd packages/db
+npx prisma generate
+
+if [ $? -ne 0 ]; then
+  echo -e "${RED}Failed to generate Prisma Client${NC}"
+  exit 1
+fi
+
+echo -e "${GREEN}✓ Prisma Client generated${NC}"
+echo ""
+
+echo -e "${YELLOW}[5/5] Running Prisma migrations...${NC}"
 npx prisma migrate deploy
 
 if [ $? -ne 0 ]; then
